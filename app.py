@@ -81,7 +81,13 @@ st.sidebar.header("Control Panel")
 # Change from selectbox to text_input for free search capability
 selected_asset = st.sidebar.text_input("Enter Asset Ticker (e.g., RELIANCE.NS, BTC-USD, AAPL)", value="RELIANCE.NS").upper().strip()
 data_horizon = st.sidebar.selectbox("Data Horizon", ["6m", "1y", "2y", "5y"], index=2)
-api_key = st.sidebar.text_input("Gemini API Key", type="password")
+# 1. Fetch key automatically from Streamlit Secrets or Environment
+api_key = st.secrets.get("GEMINI_API_KEY", "") or os.getenv("GEMINI_API_KEY", "")
+
+# 2. Sidebar input (optional override for users)
+user_key = st.sidebar.text_input("Gemini API Key (Optional)", type="password")
+if user_key:
+    api_key = user_key
 
 # Fetch Market Data
 data = yf.download(selected_asset, period=data_horizon, interval="1d")
